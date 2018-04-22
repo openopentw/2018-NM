@@ -26,9 +26,7 @@ int main () {
 	// cause an underflow exception (not reported)
 	x = DBL_MIN;
 	printf("min_normal = %g\n", x);
-	if (!sigsetjmp(FESigjmp, 1)) {
-		x = x / 13.0;
-	}
+	x = x / 13.0;
 	printf("min_normal / 13.0 = %g\n", x);
 
 	// cause an overflow exception (reported)
