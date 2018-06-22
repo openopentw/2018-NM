@@ -1,0 +1,312 @@
+// -relaxed-mathjax-everywhere
+
+h1 Numerical Methods – HW7
+
+div.subtitle
+  div b04902053 鄭淵仁
+  div June 21, 2018
+
+h2 Environment
+
+ul
+  li <b>OS:</b> Windows
+  li <b>CPU:</b> Intel Core i5-4200H
+  li <b>Programming Language:</b> Matlab R2018a
+
+h2 <b>Problem 7-1:</b> Write bisection and Newton methods.
+
+h2 Codes
+
+h3 Bisection
+
+pre
+  code
+    :highlight(lang='matlab')
+      function [p, iter] = bisec(f, a, b, tol)
+          if f(a) * f(b) >= 0
+              disp('f(a) * f(b) >= 0');
+          else
+              iter = 0;
+              p = (a + b) / 2;
+              while abs(f(p)) > tol
+                  iter = iter + 1;
+                  if f(a) * f(p) < 0
+                      b = p;
+                  else
+                      a = p;
+                  end
+                  p = (a + b) / 2;
+              end
+          end
+      end
+
+h3 Newton's Method
+
+pre
+  code
+    :highlight(lang='matlab')
+      function [p, iter] = newton(f, df, x0, tol, max_iter)
+          p = x0;
+          iter = 0;
+          while (abs(f(p) > tol)) && (iter < max_iter)
+              iter = iter + 1;
+              p = p - f(p) / df(p);
+          end
+      end
+
+h3 Check Linear Convergence Rates
+
+pre
+  code
+    :highlight(lang='matlab')
+      conv_rates = [];
+      while % ...
+          % ... (Methods)
+          % Record Convergence Rates
+          if iter > 1
+              conv_rates(end + 1) = abs((p - p_star) / last_err);
+          end
+          last_err = p - p_star;
+
+h3 Check Quadratic Convergence Rates
+
+pre
+  code
+    :highlight(lang='matlab')
+      conv_rates = [];
+      while % ...
+          % ... (Methods)
+          % Record Convergence Rates
+          if iter > 1
+              conv_rates(end + 1) = abs((p - p_star) / last_err ^ 2);
+          end
+          last_err = p - p_star;
+
+div(style="page-break-before:always")
+
+h2 Test with Functions and Results
+
+h3 Find Roots of Functions
+
+ol
+  li \( f_1(x) = x^3 - 2x + 1 \)
+    ul
+      li Graph:
+        div.img
+          img(src='./assets/images/graph1.png')
+
+      li Analytical Solutions:
+        ul
+          li \(x = 1\)
+          li \(x = - {1 \over 2} + {\sqrt{5} \over 2} \approx 0.6180\)
+          li \(x = - {1 \over 2} - {\sqrt{5} \over 2} \approx -1.6180\)
+
+      li Find roots by Bisection / Newton's Method (set tolerance = 1e-14):
+        figure
+          table
+            thead
+              tr
+                th
+                th Bisection
+                th Newton's
+            tbody
+              tr
+                td Parameters
+                td \( (beg, end) = (0.65, 8) \)
+                td \( x_0 = 8 \)
+              tr
+                td Result
+                td 0.999999999999999
+                td 1
+              tr
+                td Iteration
+                td 47
+                td 11
+  li \( f_2(x) = sin(x) - cos(x) \)
+    ul
+      li Graph:
+        div.img
+          img(src='./assets/images/graph2.png')
+      div(style="page-break-before:always")
+      li Analytical Solutions:
+        ul
+          li \(x = {1 \over 4} (4 \pi n + \pi), n \in \mathbb{Z} \)
+
+      li Find roots by Bisection / Newton's Method (set tolerance = 1e-14):
+        figure
+          table
+            thead
+              tr
+                th
+                th Bisection
+                th Newton's
+            tbody
+              tr
+                td Parameters
+                td \( (beg, end) = (-2, 2) \)
+                td \( x_0 = 2 \)
+              tr
+                td Result
+                td 0.785398163397451
+                td 0.785398163397448
+              tr
+                td Iteration
+                td 46
+                td 6
+  li \( f_3(x) = e^x - e^{- x} \)
+    ul
+      li Graph:
+        div.img
+          img(src='./assets/images/graph3.png')
+
+      li Analytical Solutions:
+        ul
+          li \(x = 0 \)
+
+      li Find roots by Bisection / Newton's Method (set tolerance = 1e-14):
+        figure
+          table
+            thead
+              tr
+                th
+                th Bisection
+                th Newton's
+            tbody
+              tr
+                td Parameters
+                td \( (beg, end) = (-3.7, 4.7) \)
+                td \( x_0 = 4.7 \)
+              tr
+                td Result
+                td \( 1.7552 \times 10^{-15} \)
+                td \( -6.3967 \times 10^{-18} \)
+              tr
+                td Iteration
+                td 49
+                td 8
+
+h3 Try Different Initial Solutions
+
+p I try with the last function: \( f_3(x) = e^x - e^{- x} \) .
+
+ul
+  li Bisection
+    figure
+      table
+        thead
+          tr
+            th Parameters \( (beg, end) \)
+            td \( (-3.7, 4.7) \)
+            td \( (-3.7, 8.7) \)
+            td \( (-1.3, 5.5) \)
+        tbody
+          tr
+            th Iteration
+            td 49
+            td 48
+            td 47
+  li Newton
+    figure
+      table
+        thead
+          tr
+            th Parameters \( (x_0) \)
+            td \( 4.7 \)
+            td \( 8.7 \)
+            td \( 5.5 \)
+        tbody
+          tr
+            th Iteration
+            td 8
+            td 12
+            td 9
+
+h3 Check Convergence Rates
+
+p I check with the last function: \( f_3(x) = e^x - e^{- x} \) .
+
+ul
+  li Bisection
+    ul
+      li Check with <b>linear convergence</b>: $$ { \lVert {x_{k+1} - x^*} \rVert } \over { \lVert {x_k - x^*} \rVert } $$
+      li Rates: approximately repeat the following six values again and again: $$ 1.1003, 0.0456, 9.4610, 0.4471, 0.3818, 0.1904 $$
+  li Newton's Method
+    ul
+      li Check with <b>quadratic convergence</b>: $$ { \lVert {x_{k+1} - x^*} \rVert } \over { { \lVert {x_k - x^*} \rVert } ^ 2 } $$
+      li Rates: except the last one, all the values are smaller than \( 1 \). The whole values are as following: $$ 0.1973, 0.2343, 0.2644, 0.2081, 0.0412, 2.1365 \times 10^{-4}, 8.3020 \times 10^{+2} $$
+
+div(style="page-break-before:always")
+
+h2 <b>Problem 7-2:</b> Write Newton methods with Multiple Variables.
+
+h2 Codes
+h3 Newton's Method
+pre
+  code
+    :highlight(lang='matlab')
+      function [p, iter] = newton(f, df, x0, tol, max_iter)
+          iter = 0;
+          p = x0;
+          while (sum(f(p) .^ 2) > tol) && (iter < max_iter)
+              iter = iter + 1;
+              p = p - df(p) \ f(p);
+          end
+      end
+
+h2 Test with Functions and Results
+ul
+  li Analytical Solutions:
+    ul
+      p $$ x = {\sqrt{{35 \over 4} + 4 \sqrt{5}}} \approx 0.440762872754908 $$
+      p $$ y = { \sqrt{3} \over 2 } \approx 0.866025403784439 $$
+      p $$ z = { -2 + {\sqrt{5}} } \approx 0.236067977499790 $$
+  li Test with Different Initial Solutions
+    table
+      thead
+        tr
+          th Initial Solutions
+          th Iterations
+      tbody
+        tr
+          td.
+            $$
+              \begin{bmatrix}
+              1 & 1 & 1 \\
+              \end{bmatrix}
+            $$
+          td 4
+        tr
+          td.
+            $$
+              \begin{bmatrix}
+              1 & 10 & 100 \\
+              \end{bmatrix}
+            $$
+          td 12
+        tr
+          td.
+            $$
+              \begin{bmatrix}
+              44 & 86 & 23 \\
+              \end{bmatrix}
+            $$
+          td 9
+
+template#page-footer
+  style(type='text/css').
+    .pdfheader {
+      width: 1000px;
+      text-align: center;
+      margin-bottom: 5px;
+
+      font-size: 12px;
+      color: #aaa;
+      font-family: "CMU Serif", "Times New Roman", "標楷體", "微軟正黑體";
+      font-weight: bold;
+    }
+
+  .pdfheader #[span.pageNumber]
+
+style
+  include:scss ./default_theme.scss
+  include:scss ./Report_hw7.scss
