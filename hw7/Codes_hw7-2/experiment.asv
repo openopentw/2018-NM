@@ -1,7 +1,0 @@
-format long;
-
-TOL = 1e-14;
-MAX_ITER = 20;
-
-disp('newton');
-[p, iter] = newton(@f, DFunc, P_STAR, END, TOL, MAX_ITER);
